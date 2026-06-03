@@ -1,24 +1,27 @@
-# EX 4D Longest Common SubSequence - Dynamic Programming
+# EX 4C Coin Change Problem - Dynamic Programming
 
 
 ## AIM:
 
-To write a Java program to find the length of the **Longest Common Subsequence (LCS)** between two given strings using **Dynamic Programming**.
+To write a Java program to find the minimum number of coins required to make a given amount using the **Coin Change Dynamic Programming approach**.
+If the given amount cannot be formed using the available denominations, return **-1**.
 
 ---
 
 ## Algorithm:
 
-1. Read the two input strings `text1` and `text2`.
-2. Create a 2D DP matrix `dp[m+1][n+1]` where `m` and `n` are the lengths of the strings.
-3. Fill the DP table from bottom-right to top-left:
+1. Read the coin denominations array and the target amount.
+2. Create a DP array `dp[]` of size `amount + 1`, filled with a large value (amount + 1).
+3. Set `dp[0] = 0` because 0 coins are needed to make amount 0.
+4. For each amount `i` from 1 to `amount`, check each coin:
 
-   * If characters match:
-     `dp[i][j] = 1 + dp[i+1][j+1]`
-   * Else:
-     `dp[i][j] = max(dp[i+1][j], dp[i][j+1])`
-4. The value at `dp[0][0]` gives the length of the LCS.
-5. Print the result.
+   * If `coin <= i`, update
+     `dp[i] = min(dp[i], dp[i - coin] + 1)`
+5. After filling the DP table:
+
+   * If `dp[amount]` is still greater than amount, return **-1**.
+   * Else return `dp[amount]`.
+6. Print the result.
 
 ---
 
@@ -26,40 +29,50 @@ To write a Java program to find the length of the **Longest Common Subsequence (
 
 ```java
 /*
-Program to implement Longest Common SubSequence
+Coin Change using Dynamic Programming
 Developed by: Shubhavi M
 RegisterNumber:  212223040199
 */
 
-import java.util.Scanner;
+import java.util.*;
 
 public class Solution {
-    public int longestCommonSubsequence(String text1, String text2) {
-        int[][] dpGrid = new int[text1.length() + 1][text2.length() + 1];
+    public int coinChange(int[] coins, int amount) {
+        int max = amount + 1;
+        int[] dp = new int[amount + 1];
+        Arrays.fill(dp, max);
+        dp[0] = 0;
 
-        for (int col = text2.length() - 1; col >= 0; col--) {
-            for (int row = text1.length() - 1; row >= 0; row--) {
-                if (text1.charAt(row) == text2.charAt(col)) {
-                    dpGrid[row][col] = 1 + dpGrid[row + 1][col + 1];
-                } else {
-                    dpGrid[row][col] = Math.max(dpGrid[row + 1][col], dpGrid[row][col + 1]);
+        for (int i = 1; i <= amount; i++) {
+            for (int coin : coins) {
+                if (coin <= i) {
+                    dp[i] = Math.min(dp[i], dp[i - coin] + 1);
                 }
             }
         }
-        return dpGrid[0][0];
+        return dp[amount] > amount ? -1 : dp[amount];
     }
 
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        Solution sol = new Solution();
+        Scanner scanner = new Scanner(System.in);
+        Solution solution = new Solution();
 
-        String text1 = sc.nextLine().replaceAll("\"", "");
-        String text2 = sc.nextLine().replaceAll("\"", "");
+        String coinsLine = scanner.nextLine();
+        String amountLine = scanner.nextLine();
 
-        int lcsLength = sol.longestCommonSubsequence(text1, text2);
-        System.out.println("Length of Longest Common Subsequence: " + lcsLength);
+        coinsLine = coinsLine.replaceAll("[^0-9,]", "");
+        String[] coinsStr = coinsLine.split(",");
+        int[] coins = new int[coinsStr.length];
 
-        sc.close();
+        for (int i = 0; i < coinsStr.length; i++) {
+            coins[i] = Integer.parseInt(coinsStr[i]);
+        }
+
+        int amount = Integer.parseInt(amountLine.replaceAll("[^0-9]", ""));
+        int result = solution.coinChange(coins, amount);
+        System.out.println(result);
+
+        scanner.close();
     }
 }
 ```
@@ -68,10 +81,11 @@ public class Solution {
 
 ## Output:
 
-<img width="1152" height="297" alt="image" src="https://github.com/user-attachments/assets/43c9f0ba-d6fe-4de2-9777-310b89646bd1" />
+<img width="601" height="357" alt="image" src="https://github.com/user-attachments/assets/04a38571-9a3c-4824-b424-592b48322b56" />
 
----
 
 ## Result:
 
-The program was successfully implemented using Dynamic Programming and the expected output was verified.
+The program was successfully implemented using Dynamic Programming, and the expected output was verified.
+
+---
